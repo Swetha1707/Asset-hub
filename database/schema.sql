@@ -338,3 +338,58 @@ CREATE TABLE activity_logs (
     INDEX idx_log_module (module),
     INDEX idx_log_date (created_at)
 );
+CREATE TABLE return_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    asset_id INT NOT NULL,
+    reason TEXT,
+    status ENUM('PENDING','APPROVED','REJECTED','COMPLETED')
+           DEFAULT 'PENDING',
+    admin_comment TEXT,
+    handled_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+               ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (employee_id)
+        REFERENCES employees(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (asset_id)
+        REFERENCES assets(id)
+        ON DELETE CASCADE
+);
+SHOW TABLES;
+SELECT * FROM return_requests;
+USE asset_management;
+
+CREATE TABLE maintenance_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT NOT NULL,
+    asset_id INT NOT NULL,
+    problem VARCHAR(255) NOT NULL,
+    description TEXT,
+
+    status ENUM(
+        'PENDING',
+        'APPROVED',
+        'REJECTED',
+        'IN_PROGRESS',
+        'COMPLETED'
+    ) DEFAULT 'PENDING',
+
+    admin_comment TEXT,
+    handled_by INT,
+
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+               ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (employee_id)
+        REFERENCES employees(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (asset_id)
+        REFERENCES assets(id)
+        ON DELETE CASCADE
+);
