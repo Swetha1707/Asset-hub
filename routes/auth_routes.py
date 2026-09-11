@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database.db import query_one, execute
 from utils.security import current_user, log_activity, login_required
 
-
 auth_bp = Blueprint("auth", __name__)
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -19,8 +18,6 @@ def index():
         return redirect(url_for("request.requests_page"))
 
     return redirect(url_for("dashboard.dashboard_home"))
-
-
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
