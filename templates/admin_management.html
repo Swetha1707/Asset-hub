@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Admin Management{% endblock %}
+{% block page_title %}Admin Management{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h2>Administrators</h2>
+  <button class="btn btn-primary" onclick="openAdminForm()">+ Add Administrator</button>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+      <tbody id="adminsBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminFormModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Add Administrator</h3><button class="modal-close" onclick="closeModal('adminFormModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="af_full_name" required></div>
+        <div class="form-group"><label>Username *</label><input type="text" id="af_username" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email *</label><input type="email" id="af_email" required></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="af_phone"></div>
+      </div>
+      <div class="form-group"><label>Password * (min 8 characters)</label>
+        <div class="password-field">
+          <input type="password" id="af_password" minlength="8" required>
+          <button type="button" class="password-toggle" onclick="togglePassword('af_password', this)">👁️</button>
+        </div>
+      </div>
+      <div class="form-hint">New admins automatically receive "Use AI Assistant" and "View Notifications" permissions, per policy.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('adminFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAdminForm()">Create Administrator</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="permissionsModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Manage Permissions</h3><button class="modal-close" onclick="closeModal('permissionsModal')">×</button></div>
+    <div class="modal-body" id="permissionsBody">Loading...</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('permissionsModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePermissions()">Save Permissions</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminActivityModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3>Administrator Activity</h3><button class="modal-close" onclick="closeModal('adminActivityModal')">×</button></div>
+    <div class="modal-body">
+      <div class="table-wrap"><table><thead><tr><th>Action</th><th>Module</th><th>Description</th><th>Timestamp</th></tr></thead><tbody id="adminActivityBody"></tbody></table></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('adminActivityModal')">← Back</button></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

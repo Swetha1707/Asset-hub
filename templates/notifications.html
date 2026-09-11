@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h2>Notification Center</h2>
+  <button class="btn btn-outline" onclick="markAllRead()">Mark all as read</button>
+</div>
+<div class="card">
+  <div id="notificationsList"><div class="skeleton" style="height:60px;"></div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant{% endblock %}
+{% block page_title %}🤖 Ask Asset AI{% endblock %}
+{% block content %}
+<div class="grid grid-cols-3" style="align-items:start;">
+  <div class="card" style="grid-column: span 2;">
+    <div class="card-title">Chat with Asset AI</div>
+    <div id="aiChatBody" style="display:flex; flex-direction:column; gap:12px; min-height:360px; max-height:520px; overflow-y:auto; margin-bottom:14px;">
+      <div class="ai-msg ai-msg-bot">{% if logged_in_user.role_name == 'EMPLOYEE' %}
+  Hi! I can help with your asset requests, request status,
+  return requests, maintenance problems, complaint descriptions
+  and company policies.
+{% else %}
+  Hi! Ask me anything about your assets, maintenance, licenses or requests.
+{% endif %}</div>
+    </div>
+    <form id="aiChatForm" style="display:flex; gap:8px;">
+      <input type="text" id="aiChatInput" placeholder='e.g. "Which licenses expire next month?"'>
+      <button type="submit" class="btn btn-primary">Ask</button>
+    </form>
+    <div class="form-hint" style="margin-top:10px;">
+      Try: "How many laptops are available?", "Who has asset LAP-1001?", "Which assets have repeated maintenance issues?"
+    </div>
+  </div>
+  {% if logged_in_user.role_name != 'EMPLOYEE' %}
+
+<div class="card">
+  <div class="card-title">AI Insights</div>
+  <div id="aiInsightsList">
+    <div class="skeleton" style="height:60px;"></div>
+  </div>
+</div>
+
+{% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/ai_assistant.js') }}"></script>
+{% endblock %}

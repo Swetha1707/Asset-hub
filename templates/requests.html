@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Requests{% endblock %}
+{% block page_title %}Asset Requests{% endblock %}
+{% block content %}
+<div class="section-header">
+<h2>{{ 'My Asset Requests' if user.role_name == 'EMPLOYEE' else 'Asset Requests' }}</h2>  {% if user.role_name == 'EMPLOYEE' %}<button class="btn btn-primary" onclick="openRequestForm()">+ Create Request</button>{% endif %}
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-status="" onclick="filterStatus('', this)">All</button>
+  <button class="tab" data-status="PENDING" onclick="filterStatus('PENDING', this)">Pending</button>
+  <button class="tab" data-status="APPROVED" onclick="filterStatus('APPROVED', this)">Approved</button>
+  <button class="tab" data-status="ISSUED" onclick="filterStatus('ISSUED', this)">Issued</button>
+  <button class="tab" data-status="REJECTED" onclick="filterStatus('REJECTED', this)">Rejected</button>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+<thead>
+<tr>
+  {% if user.role_name != 'EMPLOYEE' %}
+  <th>Requested By</th>
+  {% endif %}
+
+  <th>Category</th>
+  <th>Reason</th>
+  <th>Required Date</th>
+  <th>Status</th>
+  <th>Assigned Asset</th>
+  <th>Admin Response</th>
+
+  {% if user.role_name != 'EMPLOYEE' %}
+  <th>Actions</th>
+  {% endif %}
+</tr>
+</thead>
+      <tbody id="requestsBody"><tr><td colspan="7"><div class="skeleton"></div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="requestFormModal">
+  <div class="modal">
+    <div class="modal-header"><h3>Create Asset Request</h3><button class="modal-close" onclick="closeModal('requestFormModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Asset Category *</label>
+        <select id="rf_category_id" required>{% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+      </div>
+      <div class="form-group"><label>Reason *</label><textarea id="rf_reason" rows="3" required></textarea></div>
+      <div class="form-group"><label>Required Date</label><input type="date" id="rf_required_date"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('requestFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitRequestForm()">Submit Request</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="decisionModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="decisionTitle">Approve Request</h3><button class="modal-close" onclick="closeModal('decisionModal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="decisionReqId"><input type="hidden" id="decisionType">
+      <div class="form-group" id="assetSelectGroup"><label>Assign Available Asset</label><select id="decisionAssetId"></select></div>
+      <div class="form-group"><label>Comment</label><textarea id="decisionComment" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('decisionModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitDecision()">Confirm</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>window.CURRENT_ROLE = "{{ user.role_name }}";</script>
+<script src="{{ url_for('static', filename='js/requests.js') }}"></script>
+{% endblock %}

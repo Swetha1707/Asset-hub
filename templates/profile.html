@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="card" style="max-width:520px; margin-bottom:20px;">
+
+  <div class="card-title">
+    Account Information
+  </div>
+
+  <div class="form-group">
+    <label>Full Name</label>
+    <input
+      type="text"
+      value="{{ logged_in_user.full_name }}"
+      disabled>
+  </div>
+
+  <div class="form-group">
+    <label>Username</label>
+    <input
+      type="text"
+      value="{{ logged_in_user.username }}"
+      disabled>
+  </div>
+
+  <div class="form-group">
+    <label>Email</label>
+    <input
+      type="text"
+      value="{{ logged_in_user.email }}"
+      disabled>
+  </div>
+
+  <div class="form-group">
+    <label>Role</label>
+    <input
+      type="text"
+      value="{{ logged_in_user.role_name.replace('_',' ') | title }}"
+      disabled>
+  </div>
+
+</div>
+
+
+<div class="card" style="max-width:520px;">
+
+  <div class="card-title">
+    Change Password
+  </div>
+
+  <form method="POST"
+        action="{{ url_for('auth.profile') }}">
+
+    <div class="form-group">
+      <label>Current Password *</label>
+
+      <input
+        type="password"
+        name="current_password"
+        placeholder="Enter current password"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label>New Password *</label>
+
+      <input
+        type="password"
+        name="new_password"
+        placeholder="Enter new password"
+        minlength="8"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label>Confirm New Password *</label>
+
+      <input
+        type="password"
+        name="confirm_password"
+        placeholder="Re-enter new password"
+        minlength="8"
+        required>
+    </div>
+
+    <div class="form-hint"
+         style="margin-bottom:15px;">
+      Password must contain at least 8 characters.
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary">
+      Change Password
+    </button>
+
+  </form>
+
+</div>
+
+{% endblock %}

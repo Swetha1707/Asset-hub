@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Return Request{% endblock %}
+{% block page_title %}Return Request{% endblock %}
+
+{% block content %}
+
+<div class="section-header">
+  <h2>My Return Requests</h2>
+
+  <button class="btn btn-primary"
+          onclick="openModal('returnRequestModal')">
+    + New Return Request
+  </button>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Asset</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th>Admin Response</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+
+      <tbody id="returnRequestsBody">
+        <tr>
+          <td colspan="5">
+            <div class="skeleton"></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="returnRequestModal">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3>New Return Request</h3>
+      <button class="modal-close"
+              onclick="closeModal('returnRequestModal')">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label>Select Asset *</label>
+        <select id="rr_asset_id"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Reason for Return *</label>
+        <textarea id="rr_reason"
+                  rows="3"
+                  placeholder="Why do you want to return this asset?"></textarea>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline"
+              onclick="closeModal('returnRequestModal')">
+        Cancel
+      </button>
+
+      <button class="btn btn-primary"
+              onclick="submitReturnRequest()">
+        Submit
+      </button>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/return_requests.js') }}"></script>
+{% endblock %}

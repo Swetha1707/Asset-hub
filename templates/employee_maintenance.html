@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Request{% endblock %}
+{% block page_title %}Maintenance Request{% endblock %}
+
+{% block content %}
+
+<div class="section-header">
+  <h2>My Maintenance Requests</h2>
+
+  <button class="btn btn-primary"
+          onclick="openModal('maintenanceRequestModal')">
+    + Report Problem
+  </button>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Asset</th>
+          <th>Problem</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Admin Response</th>
+        </tr>
+      </thead>
+
+      <tbody id="myMaintenanceBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="maintenanceRequestModal">
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3>Report Asset Problem</h3>
+      <button class="modal-close"
+              onclick="closeModal('maintenanceRequestModal')">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label>Asset *</label>
+        <select id="mr_asset_id"></select>
+      </div>
+
+      <div class="form-group">
+        <label>Problem *</label>
+        <input type="text"
+               id="mr_problem"
+               placeholder="Example: Screen not working">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="mr_description" rows="3"></textarea>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary"
+              onclick="submitMaintenanceRequest()">
+        Submit
+      </button>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static',
+filename='js/employee_maintenance.js') }}"></script>
+{% endblock %}

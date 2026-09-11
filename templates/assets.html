@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Assets{% endblock %}
+{% block page_title %}Assets{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h2>Asset Inventory</h2>
+  <div style="display:flex; gap:8px;">
+    {% if 'EXPORT_REPORTS' in user_permissions %}
+    <button class="btn btn-outline" onclick="exportAssets('csv')">⬇ CSV</button>
+    <button class="btn btn-outline" onclick="exportAssets('xlsx')">⬇ Excel</button>
+    <button class="btn btn-outline" onclick="exportAssets('pdf')">⬇ PDF</button>
+    {% endif %}
+    {% if 'ADD_ASSETS' in user_permissions %}
+    <button class="btn btn-primary" onclick="openAssetForm()">+ Add Asset</button>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box"><input type="text" id="fSearch" placeholder="Search by ID, name, serial, brand, employee..."></div>
+    <select id="fCategory"><option value="">All Categories</option>{% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select>
+    <select id="fDepartment"><option value="">All Departments</option>{% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+    <select id="fStatus">
+      <option value="">All Status</option>
+      <option value="AVAILABLE">Available</option><option value="ASSIGNED">Assigned</option>
+      <option value="RESERVED">Reserved</option><option value="UNDER_MAINTENANCE">Under Maintenance</option>
+      <option value="LOST">Lost</option><option value="DAMAGED">Damaged</option>
+      <option value="RETIRED">Retired</option><option value="DISPOSED">Disposed</option>
+    </select>
+    <select id="fAssigned"><option value="">Assigned/Unassigned</option><option value="assigned">Assigned</option><option value="unassigned">Unassigned</option></select>
+    <button class="btn btn-outline" onclick="resetFilters()">Reset</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Asset ID</th><th>Name</th><th>Category</th><th>Department</th><th>Assigned To</th><th>Status</th><th>Value</th><th></th></tr></thead>
+      <tbody id="assetsTableBody"><tr><td colspan="8"><div class="skeleton"></div></td></tr></tbody>
+    </table>
+  </div>
+  <div class="pagination" id="assetsPagination"></div>
+</div>
+
+<!-- Add/Edit Asset Modal -->
+<div class="modal-overlay" id="assetFormModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="assetFormTitle">Add Asset</h3><button class="modal-close" onclick="closeModal('assetFormModal')">×</button></div>
+    <div class="modal-body">
+      <form id="assetForm">
+        <input type="hidden" id="assetId">
+        <div class="form-row">
+          <div class="form-group"><label>Asset ID *</label><input type="text" id="af_asset_code" required></div>
+          <div class="form-group"><label>Asset Name *</label><input type="text" id="af_name" required></div>
+        </div>
+        <div class="form-row">
+<div class="form-group">
+  <label>Category *</label>
+
+  <select id="af_category_id" required onchange="handleCategoryChange()">
+    <option value="">Select Category</option>
+
+    {% for c in categories %}
+    <option value="{{ c.id }}">{{ c.name }}</option>
+    {% endfor %}
+
+    <option value="OTHERS">Others</option>
+  </select>
+
+  <div id="newCategoryGroup" style="display:none; margin-top:10px;">
+    <label>Category Name *</label>
+    <input
+      type="text"
+      id="af_new_category_name"
+      placeholder="Enter category name"
+    >
+  </div>
+</div>          <div class="form-group"><label>Department</label><select id="af_department_id"><option value="">-</option>{% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Brand</label><input type="text" id="af_brand"></div>
+          <div class="form-group"><label>Model</label><input type="text" id="af_model"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Serial Number</label><input type="text" id="af_serial_number"></div>
+          <div class="form-group"><label>Vendor</label><input type="text" id="af_vendor"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Purchase Date</label><input type="date" id="af_purchase_date"></div>
+          <div class="form-group"><label>Purchase Cost</label><input type="number" step="0.01" id="af_purchase_cost"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Current Value</label><input type="number" step="0.01" id="af_current_value"></div>
+          <div class="form-group"><label>Location</label><input type="text" id="af_location"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Warranty Start</label><input type="date" id="af_warranty_start"></div>
+          <div class="form-group"><label>Warranty End</label><input type="date" id="af_warranty_end"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Status</label>
+            <select id="af_status">
+              <option value="AVAILABLE">Available</option><option value="ASSIGNED">Assigned</option>
+              <option value="RESERVED">Reserved</option><option value="UNDER_MAINTENANCE">Under Maintenance</option>
+              <option value="LOST">Lost</option><option value="DAMAGED">Damaged</option>
+              <option value="RETIRED">Retired</option><option value="DISPOSED">Disposed</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Condition</label>
+            <select id="af_condition_status"><option value="NEW">New</option><option value="GOOD">Good</option><option value="FAIR">Fair</option><option value="POOR">Poor</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label>Description</label><textarea id="af_description" rows="3"></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('assetFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAssetForm()">Save Asset</button>
+    </div>
+  </div>
+</div>
+
+<!-- Asset Details Modal -->
+<div class="modal-overlay" id="assetDetailsModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3>Asset Details</h3><button class="modal-close" onclick="closeModal('assetDetailsModal')">×</button></div>
+    <div class="modal-body" id="assetDetailsBody">Loading...</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('assetDetailsModal')">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm -->
+<div class="modal-overlay" id="deleteConfirmModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header"><h3>Confirm Delete</h3><button class="modal-close" onclick="closeModal('deleteConfirmModal')">×</button></div>
+    <div class="modal-body">Are you sure you want to delete this asset? This action can be reviewed later in Activity Logs.</div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('deleteConfirmModal')">Cancel</button>
+      <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/assets.js') }}"></script>
+{% endblock %}

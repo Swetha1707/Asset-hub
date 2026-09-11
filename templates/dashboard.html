@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h2>Welcome, {{ user.full_name }} 👋</h2>
+</div>
+
+<div class="grid grid-cols-5" id="statCards" style="margin-bottom:22px;">
+  {% for i in range(5) %}<div class="card stat-card"><div class="skeleton" style="width:60%;"></div><div class="skeleton" style="width:40%; height:26px;"></div></div>{% endfor %}
+</div>
+
+<div class="section-header">
+  <h2>Quick Actions</h2>
+</div>
+<div class="toolbar" style="margin-bottom:24px;">
+  {% if 'ADD_ASSETS' in user_permissions %}<a href="{{ url_for('asset.assets_page') }}" class="btn btn-outline">+ Add Asset</a>{% endif %}
+  {% if 'MANAGE_EMPLOYEES' in user_permissions %}<a href="{{ url_for('employee.employees_page') }}" class="btn btn-outline">+ Add Employee</a>{% endif %}
+  {% if 'MANAGE_REQUESTS' in user_permissions %}<a href="{{ url_for('request.requests_page') }}" class="btn btn-outline">+ Create Request</a>{% endif %}
+  {% if 'MANAGE_MAINTENANCE' in user_permissions %}<a href="{{ url_for('maintenance.maintenance_page') }}" class="btn btn-outline">+ Schedule Maintenance</a>{% endif %}
+  {% if 'MANAGE_LICENSES' in user_permissions %}<a href="{{ url_for('license.licenses_page') }}" class="btn btn-outline">+ Add License</a>{% endif %}
+  {% if 'VIEW_REPORTS' in user_permissions %}<a href="{{ url_for('report.reports_page') }}" class="btn btn-outline">📊 Generate Report</a>{% endif %}
+  {% if 'USE_AI_ASSISTANT' in user_permissions %}<a href="{{ url_for('ai.ai_assistant_page') }}" class="btn btn-outline">🤖 Ask AI</a>{% endif %}
+</div>
+
+{% if 'USE_AI_ASSISTANT' in user_permissions %}
+<div class="section-header"><h2>AI Insights</h2></div>
+<div class="grid grid-cols-2" id="insightCards" style="margin-bottom:24px;"></div>
+{% endif %}
+
+<div class="section-header"><h2>Analytics</h2></div>
+<div class="grid grid-cols-2" style="margin-bottom:18px;">
+  <div class="card chart-card"><div class="card-title">Assets by Category</div><canvas id="chartByCategory"></canvas></div>
+  <div class="card chart-card"><div class="card-title">Assets by Department</div><canvas id="chartByDepartment"></canvas></div>
+</div>
+<div class="grid grid-cols-2" style="margin-bottom:18px;">
+  <div class="card chart-card"><div class="card-title">Asset Status Distribution</div><canvas id="chartByStatus"></canvas></div>
+  <div class="card chart-card"><div class="card-title">Asset Value by Department (₹)</div><canvas id="chartValueByDept"></canvas></div>
+</div>
+<div class="grid grid-cols-2">
+  <div class="card chart-card"><div class="card-title">Maintenance Overview</div><canvas id="chartMaintenance"></canvas></div>
+  <div class="card chart-card"><div class="card-title">Monthly Asset Requests</div><canvas id="chartRequests"></canvas></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

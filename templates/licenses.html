@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Licenses & Subscriptions{% endblock %}
+{% block page_title %}Licenses & Subscriptions{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h2>Licenses &amp; Subscriptions</h2>
+  <div style="display:flex; gap:8px;">
+    {% if 'EXPORT_REPORTS' in user_permissions %}
+    <button class="btn btn-outline" onclick="exportLicenses('csv')">⬇ CSV</button>
+    <button class="btn btn-outline" onclick="exportLicenses('xlsx')">⬇ Excel</button>
+    <button class="btn btn-outline" onclick="exportLicenses('pdf')">⬇ PDF</button>
+    {% endif %}
+    <button class="btn btn-primary" onclick="openLicenseForm()">+ Add License</button>
+  </div>
+</div>
+
+<div class="grid grid-cols-3" style="margin-bottom:18px;">
+  <div class="card stat-card"><div class="stat-label">Active</div><div class="stat-value" id="lActive">-</div></div>
+  <div class="card stat-card"><div class="stat-label">Expiring Soon</div><div class="stat-value" id="lExpiring">-</div></div>
+  <div class="card stat-card"><div class="stat-label">Expired</div><div class="stat-value" id="lExpired">-</div></div>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box"><input type="text" id="lSearch" placeholder="Search software..."></div>
+    <select id="lRenewal"><option value="">All</option><option value="OK">OK</option><option value="DUE_SOON">Due Soon</option><option value="EXPIRED">Expired</option></select>
+    <select id="lDepartment"><option value="">All Departments</option>{% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Software</th><th>Vendor</th><th>Expiry</th><th>Seats</th><th>Renewal</th><th>Cost</th><th></th></tr></thead>
+      <tbody id="licensesBody"><tr><td colspan="7"><div class="skeleton"></div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="licenseFormModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="licFormTitle">Add License</h3><button class="modal-close" onclick="closeModal('licenseFormModal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="licenseId">
+      <div class="form-row">
+        <div class="form-group"><label>Software Name *</label><input type="text" id="lf_software_name" required></div>
+        <div class="form-group"><label>License Type</label><input type="text" id="lf_license_type" placeholder="Subscription / Perpetual"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Vendor</label><input type="text" id="lf_vendor"></div>
+        <div class="form-group"><label>License Key</label><input type="text" id="lf_license_key"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Start Date</label><input type="date" id="lf_start_date"></div>
+        <div class="form-group"><label>Expiry Date</label><input type="date" id="lf_expiry_date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Seats Total</label><input type="number" id="lf_seats_total" value="1"></div>
+        <div class="form-group"><label>Seats Used</label><input type="number" id="lf_seats_used" value="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Cost</label><input type="number" step="0.01" id="lf_cost"></div>
+        <div class="form-group"><label>Department</label><select id="lf_department_id"><option value="">-</option>{% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="form-group"><label>Renewal Status</label>
+        <select id="lf_renewal_status"><option value="OK">OK</option><option value="DUE_SOON">Due Soon</option><option value="EXPIRED">Expired</option></select>
+      </div>
+      <div class="form-group"><label class="checkbox-row"><input type="checkbox" id="lf_auto_renewal"> Auto-renewal enabled</label></div>
+      <div class="form-group"><label>Notes</label><textarea id="lf_notes" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('licenseFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitLicenseForm()">Save License</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/licenses.js') }}"></script>
+{% endblock %}

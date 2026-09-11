@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Asset Management System{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
+</head>
+<body data-perms="{{ user_permissions | join(',') }}">
+{% if logged_in_user %}
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🗂️</span>
+      <span class="brand-text">AssetHub</span>
+      <button class="sidebar-close" id="sidebarClose">×</button>
+    </div>
+<nav class="sidebar-nav">
+
+  {% if logged_in_user.role_name == 'EMPLOYEE' %}
+
+    <a href="{{ url_for('request.requests_page') }}"
+       class="nav-item {{ 'active' if request.path=='/requests' }}">
+      <span>📝</span> My Asset Request
+    </a>
+
+    <a href="{{ url_for('request.return_requests_page') }}"
+       class="nav-item {{ 'active' if request.path=='/return-requests' }}">
+      <span>↩️</span> Return Request
+    </a>
+
+    <a href="{{ url_for('maintenance.employee_maintenance_page') }}"
+       class="nav-item {{ 'active' if request.path=='/my-maintenance' }}">
+      <span>🔧</span> Maintenance Request
+    </a>
+
+    <a href="{{ url_for('request.my_requests_page') }}"
+       class="nav-item {{ 'active' if request.path=='/my-requests' }}">
+      <span>📋</span> My Requests
+    </a>
+    <a href="{{ url_for('ai.ai_assistant_page') }}"
+     class="nav-item {{ 'active' if request.path=='/ai-assistant' }}">
+    <span>🤖</span> AI Assistant
+  </a>
+
+  {% else %}
+
+    <a href="{{ url_for('dashboard.dashboard_home') }}"
+       class="nav-item {{ 'active' if request.path=='/dashboard' }}">
+      <span>📊</span> Dashboard
+    </a>
+
+    {% if 'VIEW_ASSETS' in user_permissions %}
+    <a href="{{ url_for('asset.assets_page') }}" class="nav-item">
+      <span>💻</span> Assets
+    </a>
+    {% endif %}
+
+    {% if 'VIEW_EMPLOYEES' in user_permissions %}
+    <a href="{{ url_for('employee.employees_page') }}" class="nav-item">
+      <span>👥</span> Employees
+    </a>
+    {% endif %}
+
+    {% if 'VIEW_ASSETS' in user_permissions %}
+    <a href="{{ url_for('department.departments_page') }}" class="nav-item">
+      <span>🏢</span> Departments
+    </a>
+    {% endif %}
+
+    {% if 'MANAGE_REQUESTS' in user_permissions %}
+    <a href="{{ url_for('request.requests_page') }}" class="nav-item">
+      <span>📝</span> Requests
+    </a>
+    {% endif %}
+
+    {% if 'MANAGE_MAINTENANCE' in user_permissions %}
+    <a href="{{ url_for('maintenance.maintenance_page') }}" class="nav-item">
+      <span>🔧</span> Maintenance
+    </a>
+    {% endif %}
+
+    {% if 'MANAGE_LICENSES' in user_permissions %}
+    <a href="{{ url_for('license.licenses_page') }}" class="nav-item">
+      <span>🔑</span> Licenses &amp; Subscriptions
+    </a>
+    {% endif %}
+
+    {% if 'VIEW_REPORTS' in user_permissions %}
+    <a href="{{ url_for('report.reports_page') }}" class="nav-item">
+      <span>📈</span> Reports
+    </a>
+    {% endif %}
+
+{% if logged_in_user.role_name == 'EMPLOYEE'
+      or 'USE_AI_ASSISTANT' in user_permissions %}
+          <a href="{{ url_for('ai.ai_assistant_page') }}" class="nav-item">
+      <span>🤖</span> AI Assistant
+    </a>
+    {% endif %}
+
+  {% endif %}
+
+</nav>
+    <div class="sidebar-footer">
+      <a href="{{ url_for('auth.logout') }}" class="nav-item logout"><span>🚪</span> Logout</a>
+    </div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <button class="hamburger" id="hamburgerBtn">☰</button>
+      <div class="topbar-title">{% block page_title %}{% endblock %}</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">🌙</button>
+        {% if logged_in_user.role_name == 'EMPLOYEE' or 'VIEW_NOTIFICATIONS' in user_permissions %}
+<a class="icon-btn notif-btn"
+   href="{{ url_for('notification.notifications_page') }}"
+   title="Notifications">
+  🔔 <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+</a>
+{% endif %}
+        <a href="{{ url_for('auth.profile') }}" class="user-chip">
+          <div class="avatar">{{ logged_in_user.full_name[0] | upper }}</div>
+          <div class="user-meta">
+            <div class="user-name">{{ logged_in_user.full_name }}</div>
+            <div class="user-role">{{ logged_in_user.role_name.replace('_',' ') | title }}</div>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <main class="content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-stack">
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+{% if logged_in_user.role_name == 'EMPLOYEE'
+      or 'USE_AI_ASSISTANT' in user_permissions %}
+      <button class="ai-fab" id="aiFab" title="Ask Asset AI">🤖</button>
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-header">
+    <span>🤖 Ask Asset AI</span>
+    <button id="aiPanelClose">×</button>
+  </div>
+  <div class="ai-panel-body" id="aiPanelBody">
+    <div class="ai-msg ai-msg-bot">Hi! Ask me about assets, maintenance, licenses or requests — e.g. "How many laptops are available?"</div>
+  </div>
+  <form class="ai-panel-input" id="aiPanelForm">
+    <input type="text" id="aiPanelInput" placeholder="Ask a question..." autocomplete="off">
+    <button type="submit">➤</button>
+  </form>
+</div>
+{% endif %}
+
+<div id="toastContainer" class="toast-container"></div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+{% else %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-stack auth-flash">
+    {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+{% block auth_content %}{% endblock %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endif %}
+</body>
+</html>

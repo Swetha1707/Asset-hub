@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Employees{% endblock %}
+{% block page_title %}Employees{% endblock %}
+{% block content %}
+<div class="section-header">
+  <h2>Employees</h2>
+  <div style="display:flex; gap:8px;">
+    {% if 'EXPORT_REPORTS' in user_permissions %}
+    <button class="btn btn-outline" onclick="exportEmployees('csv')">⬇ CSV</button>
+    <button class="btn btn-outline" onclick="exportEmployees('xlsx')">⬇ Excel</button>
+    <button class="btn btn-outline" onclick="exportEmployees('pdf')">⬇ PDF</button>
+    {% endif %}
+    {% if 'MANAGE_EMPLOYEES' in user_permissions %}<button class="btn btn-primary" onclick="openEmployeeForm()">+ Add Employee</button>{% endif %}
+  </div>
+</div>
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box"><input type="text" id="eSearch" placeholder="Search by name, ID, email..."></div>
+    <select id="eDepartment"><option value="">All Departments</option>{% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+    <select id="eStatus"><option value="">All Status</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Employee ID</th><th>Name</th><th>Department</th><th>Designation</th><th>Status</th><th>Assets Held</th><th></th></tr></thead>
+      <tbody id="employeesTableBody"><tr><td colspan="7"><div class="skeleton"></div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="employeeFormModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="empFormTitle">Add Employee</h3><button class="modal-close" onclick="closeModal('employeeFormModal')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="employeeId">
+      <div class="form-row">
+        <div class="form-group"><label>Employee ID *</label><input type="text" id="ef_employee_code" required></div>
+        <div class="form-group"><label>Name *</label><input type="text" id="ef_name" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email *</label><input type="email" id="ef_email" required></div>
+        <div class="form-group"><label>Phone</label><input type="text" id="ef_phone"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Department</label><select id="ef_department_id"><option value="">-</option>{% for d in departments %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select></div>
+        <div class="form-group"><label>Designation</label><input type="text" id="ef_designation"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Joining Date</label><input type="date" id="ef_joining_date"></div>
+        <div class="form-group"><label>Status</label><select id="ef_status"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('employeeFormModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitEmployeeForm()">Save Employee</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="employeeDetailsModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3>Employee Details</h3><button class="modal-close" onclick="closeModal('employeeDetailsModal')">×</button></div>
+    <div class="modal-body" id="employeeDetailsBody">Loading...</div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('employeeDetailsModal')">← Back</button></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/employees.js') }}"></script>
+{% endblock %}

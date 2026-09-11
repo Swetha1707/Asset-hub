@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}My Requests{% endblock %}
+{% block page_title %}My Requests{% endblock %}
+
+{% block content %}
+
+<h2>My Requests</h2>
+
+<div class="grid grid-cols-3">
+
+  <a href="{{ url_for('request.requests_page') }}"
+     class="card">
+    <h3>📝 Asset Requests</h3>
+    <p>View pending, approved, rejected and issued requests.</p>
+  </a>
+
+  <a href="{{ url_for('request.return_requests_page') }}"
+     class="card">
+    <h3>↩️ Return Requests</h3>
+    <p>Check your asset return request status.</p>
+  </a>
+
+  <a href="{{ url_for('maintenance.employee_maintenance_page') }}"
+     class="card">
+    <h3>🔧 Maintenance Requests</h3>
+    <p>Check reported asset problems and responses.</p>
+  </a>
+
+</div>
+
+{% endblock %}

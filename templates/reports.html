@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Reports</h2></div>
+<div class="grid grid-cols-3" style="margin-bottom:22px;">
+  {% for r in reports %}
+  <div class="card">
+    <div class="card-title">{{ r.label }}</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-sm btn-outline" onclick="previewReport('{{ r.key }}', '{{ r.label }}')">👁 Preview</button>
+      {% if 'EXPORT_REPORTS' in user_permissions %}
+      <button class="btn btn-sm btn-outline" onclick="exportReport('{{ r.key }}', 'csv')">CSV</button>
+      <button class="btn btn-sm btn-outline" onclick="exportReport('{{ r.key }}', 'xlsx')">Excel</button>
+      <button class="btn btn-sm btn-outline" onclick="exportReport('{{ r.key }}', 'pdf')">PDF</button>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="modal-overlay" id="reportPreviewModal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3 id="reportPreviewTitle">Report Preview</h3><button class="modal-close" onclick="closeModal('reportPreviewModal')">×</button></div>
+    <div class="modal-body">
+      <div class="table-wrap"><table id="reportPreviewTable"></table></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('reportPreviewModal')">← Back</button></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/reports.js') }}"></script>
+{% endblock %}

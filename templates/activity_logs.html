@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Activity Logs{% endblock %}
+{% block page_title %}Activity Logs{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Activity / Audit Logs</h2></div>
+<div class="card">
+  <div class="toolbar">
+    <div class="search-box"><input type="text" id="alSearch" placeholder="Search description or user..."></div>
+    <input type="text" id="alUser" placeholder="Filter by username">
+    <select id="alModule">
+      <option value="">All Modules</option>
+      <option value="AUTH">Auth</option><option value="ASSETS">Assets</option><option value="EMPLOYEES">Employees</option>
+      <option value="DEPARTMENTS">Departments</option><option value="MAINTENANCE">Maintenance</option>
+      <option value="LICENSES">Licenses</option><option value="REQUESTS">Requests</option>
+      <option value="REPORTS">Reports</option><option value="ADMIN_MANAGEMENT">Admin Management</option>
+      <option value="AI_ASSISTANT">AI Assistant</option><option value="SECURITY">Security</option>
+    </select>
+    <input type="date" id="alDateFrom">
+    <input type="date" id="alDateTo">
+    <button class="btn btn-outline" onclick="loadActivityLogs()">Filter</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>User</th><th>Action</th><th>Module</th><th>Description</th><th>Status</th><th>Timestamp</th></tr></thead>
+      <tbody id="activityLogsBody"><tr><td colspan="6"><div class="skeleton"></div></td></tr></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/activity_logs.js') }}"></script>
+{% endblock %}
