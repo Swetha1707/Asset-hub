@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database.db import query_one, execute
 from utils.security import current_user, log_activity, login_required
 
+
 auth_bp = Blueprint("auth", __name__)
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -11,16 +12,13 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 @auth_bp.route("/")
 def index():
-    if session.get("user_id"):
+    if not session.get("user_id"):
+        return redirect(url_for("auth.login"))
 
-        if session.get("role_name") == "EMPLOYEE":
-            return redirect(url_for("request.requests_page"))
-
-    if user["role_name"] == "EMPLOYEE":
+    if session.get("role_name") == "EMPLOYEE":
         return redirect(url_for("request.requests_page"))
 
     return redirect(url_for("dashboard.dashboard_home"))
-    return redirect(url_for("auth.login"))
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
