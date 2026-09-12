@@ -171,7 +171,7 @@ def api_create_asset():
            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
         (d["asset_code"], d["name"], category_id, d.get("brand"), d.get("model"),         d.get("serial_number") or None, d.get("purchase_date") or None, d.get("purchase_cost") or 0,
          d.get("current_value") or 0, d.get("warranty_start") or None, d.get("warranty_end") or None,
-         d.get("vendor"), department_id or None, d.get("location"),
+         d.get("vendor"), d.get("department_id") or None, d.get("location"),
          d.get("assigned_employee_id") or None, d.get("status", "AVAILABLE"),
          d.get("condition_status", "NEW"), d.get("description"), image_path),
     )
@@ -189,24 +189,6 @@ def api_update_asset(asset_id):
         return jsonify({"error": "Asset not found"}), 404
 
     d = request.form if request.form else request.json
-    department_id = d.get("department_id")
-new_department_name = (d.get("new_department_name") or "").strip()
-
-if not department_id and new_department_name:
-    existing_department = query_one(
-        "SELECT id FROM departments WHERE LOWER(name)=LOWER(%s)",
-        (new_department_name,)
-    )
-
-    if existing_department:
-        department_id = existing_department["id"]
-    else:
-        new_department = execute(
-            "INSERT INTO departments (name) VALUES (%s)",
-            (new_department_name,)
-        )
-
-        department_id = new_department["lastrowid"]
     fields = ["name", "category_id", "brand", "model", "serial_number", "purchase_date",
               "purchase_cost", "current_value", "warranty_start", "warranty_end", "vendor",
               "department_id", "location", "assigned_employee_id", "status", "condition_status",

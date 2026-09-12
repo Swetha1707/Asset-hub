@@ -100,21 +100,6 @@ function handleCategoryChange() {
     input.value = '';
   }
 }
-function handleDepartmentChange() {
-  const department = document.getElementById('af_department_id').value;
-  const group = document.getElementById('newDepartmentGroup');
-  const input = document.getElementById('af_new_department_name');
-
-  if (department === 'OTHERS') {
-    group.style.display = 'block';
-    input.required = true;
-    input.focus();
-  } else {
-    group.style.display = 'none';
-    input.required = false;
-    input.value = '';
-  }
-}
 function openAssetForm(asset = null) {
   document.getElementById('assetForm').reset();
   document.getElementById('newCategoryGroup').style.display = 'none';
@@ -169,15 +154,7 @@ new_category_name:
   document.getElementById('af_category_id').value === 'OTHERS'
     ? document.getElementById('af_new_category_name').value.trim()
     : '',
-        department_id:
-  document.getElementById('af_department_id').value === 'OTHERS'
-    ? ''
-    : document.getElementById('af_department_id').value,
-
-new_department_name:
-  document.getElementById('af_department_id').value === 'OTHERS'
-    ? document.getElementById('af_new_department_name').value.trim()
-    : '',
+        department_id: document.getElementById('af_department_id').value,
     brand: document.getElementById('af_brand').value,
     model: document.getElementById('af_model').value,
     serial_number: document.getElementById('af_serial_number').value,
