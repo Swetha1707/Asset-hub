@@ -134,9 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
       appendAiMessage(body, q, 'user');
       input.value = '';
       try {
-        const res = await apiPost('/api/ai/ask', { question: q });
-        appendAiMessage(body, res.answer, 'bot');
-      } catch (err) {
+  const thinking = appendAiMessage(body, 'Thinking...', 'bot');
+
+  const res = await apiPost('/api/ai/ask', { question: q });
+
+  thinking.textContent = res.answer;
+} catch (err) {
         appendAiMessage(body, 'Sorry, something went wrong: ' + err.message, 'bot');
       }
     });
@@ -156,6 +159,7 @@ function appendAiMessage(body, text, who) {
   el.textContent = text;
   body.appendChild(el);
   body.scrollTop = body.scrollHeight;
+  return el;
 }
 
 async function refreshNotifBadge() {

@@ -14,7 +14,8 @@ def ask_openai(question, system_prompt):
         model=MODEL,
         contents=question,
         config=types.GenerateContentConfig(
-            system_instruction=system_prompt
+            system_instruction=system_prompt,
+            max_output_tokens=250
         )
     )
 
