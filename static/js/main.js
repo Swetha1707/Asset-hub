@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
       input.value = '';
       try {
         const res = await apiPost('/api/ai/ask', { question: q });
-        appendAiMessage(body, res.text, 'bot');
+        appendAiMessage(body, res.answer, 'bot');
       } catch (err) {
         appendAiMessage(body, 'Sorry, something went wrong: ' + err.message, 'bot');
       }

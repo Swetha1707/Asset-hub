@@ -40,10 +40,7 @@
        class="nav-item {{ 'active' if request.path=='/my-requests' }}">
       <span>📋</span> My Requests
     </a>
-    <a href="{{ url_for('ai.ai_assistant_page') }}"
-     class="nav-item {{ 'active' if request.path=='/ai-assistant' }}">
-    <span>🤖</span> AI Assistant
-  </a>
+    
 
   {% else %}
 
@@ -94,12 +91,7 @@
     </a>
     {% endif %}
 
-{% if logged_in_user.role_name == 'EMPLOYEE'
-      or 'USE_AI_ASSISTANT' in user_permissions %}
-          <a href="{{ url_for('ai.ai_assistant_page') }}" class="nav-item">
-      <span>🤖</span> AI Assistant
-    </a>
-    {% endif %}
+
 
   {% endif %}
 
@@ -156,7 +148,7 @@
     <button id="aiPanelClose">×</button>
   </div>
   <div class="ai-panel-body" id="aiPanelBody">
-    <div class="ai-msg ai-msg-bot">Hi! Ask me about assets, maintenance, licenses or requests — e.g. "How many laptops are available?"</div>
+    <div class="ai-msg ai-msg-bot">Hi! Ask me about assets, maintenance, licenses or requests — e.g. Ask me a question...</div>
   </div>
   <form class="ai-panel-input" id="aiPanelForm">
     <input type="text" id="aiPanelInput" placeholder="Ask a question..." autocomplete="off">

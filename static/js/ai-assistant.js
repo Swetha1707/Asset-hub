@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-  loadAiInsights();
+  const insightContainer = document.getElementById('aiInsightsList');
+
+  if (insightContainer) {
+    loadAiInsights();
+  }
   document.getElementById('aiChatForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const input = document.getElementById('aiChatInput');
@@ -9,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     input.value = '';
     try {
       const res = await apiPost('/api/ai/ask', { question: q });
-      appendChat(res.text, 'bot');
+      appendChat(res.answer, 'bot');
     } catch (err) {
       appendChat('Sorry, something went wrong: ' + err.message, 'bot');
     }

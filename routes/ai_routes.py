@@ -4,6 +4,7 @@ permission_required("USE_AI_ASSISTANT") is hard-blocked server-side for
 EMPLOYEE role in utils.security.get_user_permissions, so even a manually
 crafted request from an Employee account receives HTTP 403.
 """
+from ai.openai_ai import ask_openai
 from flask import Blueprint, render_template, request, jsonify
 from ai.ai_assistant import answer
 from ai.employee_ai import employee_answer
@@ -38,26 +39,71 @@ def api_ai_ask():
             "error": "Please enter a question."
         }), 400
 
-    if user["role_name"] == "EMPLOYEE":
+        if user["role_name"] == "EMPLOYEE":
 
-        result = employee_answer(
+            employee_prompt = """
+You are the Employee AI Assistant for AssetHub.
+
+You can help employees only with:
+- asset request guidance
+- return request guidance
+- maintenance request guidance
+- maintenance troubleshooting
+- writing maintenance complaint descriptions
+- company asset policies
+- explaining their own request status when the application provides that information
+
+Do not provide:
+- other employees' data
+- admin data
+- company-wide database information
+- financial information
+- SQL queries
+- administrative actions
+
+If the employee asks for restricted information, politely explain that you can only help with employee asset requests, returns, maintenance, and policies.
+"""
+
+        ai_text = ask_openai(
             question,
-            user
+            employee_prompt
         )
+
+        result = {
+            "answer": ai_text
+        }
 
     else:
 
         perms = get_user_permissions(user)
 
-        if "USE_AI_ASSISTANT" not in perms:
-            return jsonify({
-                "error": "Forbidden"
-            }), 403
+        
 
-        result = answer(
+        admin_prompt = """
+You are the AssetHub Admin AI Assistant.
+
+Help administrators with:
+- assets
+- departments
+- asset requests
+- maintenance
+- licenses
+- reports
+- AssetHub procedures
+
+Do not invent database values.
+If database information is not provided to you, say that the information is not available.
+Do not generate destructive SQL commands.
+"""
+
+        ai_text = ask_openai(
             question,
-            perms
+            admin_prompt
         )
+
+        result = {
+            "answer": ai_text
+        }
 
     log_activity(
         user,
