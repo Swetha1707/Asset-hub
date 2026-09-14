@@ -90,7 +90,11 @@
       <span>📈</span> Reports
     </a>
     {% endif %}
-
+{% if logged_in_user.role_name in ['ADMIN', 'SUPER_ADMIN'] %}
+<a href="{{ url_for('auth.add_admin') }}" class="nav-item">
+  <span>➕</span> Add Admin
+</a>
+{% endif %}
 
 
   {% endif %}

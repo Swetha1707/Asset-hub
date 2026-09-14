@@ -49,14 +49,17 @@
     justify-content: center;
   }
   .tms-logo-badge {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #6ea8ff, #3f6fe0);
-    filter: blur(.2px);
-    margin: 0 auto 10px;
-    box-shadow: 0 8px 18px rgba(63,111,224,.35);
-  }
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 10px;
+}
+
+.tms-logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
   .tms-brand {
     text-align: center;
     color: #3f6fe0;
@@ -219,8 +222,9 @@
 
   <div class="tms-card">
     <div class="tms-form-panel">
-      <div class="tms-logo-badge"></div>
-      <div class="tms-brand">Asset-Hub</div>
+<div class="tms-logo-badge">
+  <img src="{{ url_for('static', filename='images/assethub-logo.png') }}" alt="AssetHub Logo">
+</div>      <div class="tms-brand">Asset-Hub</div>
 
 
       <form method="POST" action="{{ url_for('auth.login') }}">

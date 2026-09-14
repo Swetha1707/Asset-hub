@@ -18,6 +18,82 @@ def index():
         return redirect(url_for("request.requests_page"))
 
     return redirect(url_for("dashboard.dashboard_home"))
+@auth_bp.route("/add-admin", methods=["GET", "POST"])
+@login_required
+def add_admin():
+    user = current_user()
+
+    if user["role_name"] not in ["ADMIN", "SUPER_ADMIN"]:
+        return "Forbidden", 403
+
+    if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
+        username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+        password = request.form.get("password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        errors = []
+
+        if not full_name or not username or not email or not password:
+            errors.append("Please fill in all required fields.")
+
+        if not EMAIL_RE.match(email):
+            errors.append("Please enter a valid email address.")
+
+        if len(password) < 8:
+            errors.append("Password must be at least 8 characters long.")
+
+        if password != confirm_password:
+            errors.append("Passwords do not match.")
+
+        if query_one("SELECT id FROM users WHERE username=%s", (username,)):
+            errors.append("Username is already taken.")
+
+        if query_one("SELECT id FROM users WHERE email=%s", (email,)):
+            errors.append("An account with this email already exists.")
+
+        if errors:
+            for e in errors:
+                flash(e, "error")
+            return render_template("add_admin.html")
+
+        role = query_one("SELECT id FROM roles WHERE name='ADMIN'")
+
+        if not role:
+            flash("ADMIN role not found.", "error")
+            return render_template("add_admin.html")
+
+        pw_hash = generate_password_hash(password)
+
+        execute(
+            """
+            INSERT INTO users
+            (full_name, username, email, phone, password_hash, role_id)
+            VALUES (%s,%s,%s,%s,%s,%s)
+            """,
+            (
+                full_name,
+                username,
+                email,
+                phone or None,
+                pw_hash,
+                role["id"]
+            )
+        )
+
+        log_activity(
+            user,
+            "CREATE_ADMIN",
+            "AUTH",
+            f"Created admin account: {username}"
+        )
+
+        flash("Admin created successfully.", "success")
+        return redirect(url_for("auth.add_admin"))
+
+    return render_template("add_admin.html")
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
